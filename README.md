@@ -1,5 +1,5 @@
 # Web and Software Architecture 
-## Project 2022-23, Homework 1 - "WASA Photo"
+## Project 2022-23, "WASA Photo"
 
 Empty project. 
 
