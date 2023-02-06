@@ -34,9 +34,9 @@ type Timeval struct {
 type Time_t int32
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int32
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int32
 	Ixrss    int32
 	Idrss    int32
 	Isrss    int32
@@ -74,15 +74,15 @@ type Stat_t struct {
 	Gid     uint32
 	_1      int32
 	Rdev    uint64
-	_    int32
-	Atim Timespec
-	_    int32
-	Mtim Timespec
-	_    int32
-	Ctim Timespec
-	_    int32
-	Btim Timespec
-	Size int64
+	_       int32
+	Atim    Timespec
+	_       int32
+	Mtim    Timespec
+	_       int32
+	Ctim    Timespec
+	_       int32
+	Btim    Timespec
+	Size    int64
 	Blocks  int64
 	Blksize int32
 	Flags   uint32
@@ -107,9 +107,9 @@ type Statfs_t struct {
 	Asyncreads  uint64
 	Spare       [10]uint64
 	Namemax     uint32
-	Owner     uint32
-	Fsid      Fsid
-	Charspare [80]int8
+	Owner       uint32
+	Fsid        Fsid
+	Charspare   [80]int8
 	Fstypename  [16]byte
 	Mntfromname [1024]byte
 	Mntonname   [1024]byte
@@ -291,11 +291,11 @@ const (
 type PtraceLwpInfoStruct struct {
 	Lwpid        int32
 	Event        int32
-	Flags   int32
-	Sigmask Sigset_t
-	Siglist Sigset_t
-	Siginfo __PtraceSiginfo
-	Tdname  [20]int8
+	Flags        int32
+	Sigmask      Sigset_t
+	Siglist      Sigset_t
+	Siginfo      __Siginfo
+	Tdname       [20]int8
 	Child_pid    int32
 	Syscall_code uint32
 	Syscall_narg uint32
@@ -309,17 +309,6 @@ type __Siginfo struct {
 	Uid    uint32
 	Status int32
 	Addr   *byte
-	Value  [4]byte
-	_      [32]byte
-}
-type __PtraceSiginfo struct {
-	Signo  int32
-	Errno  int32
-	Code   int32
-	Pid    int32
-	Uid    uint32
-	Status int32
-	Addr   uintptr
 	Value  [4]byte
 	_      [32]byte
 }
@@ -361,8 +350,8 @@ type FpExtendedPrecision struct{}
 
 type PtraceIoDesc struct {
 	Op   int32
-	Offs uintptr
-	Addr uintptr
+	Offs *byte
+	Addr *byte
 	Len  uint32
 }
 
@@ -399,8 +388,8 @@ type ifMsghdr struct {
 	Addrs   int32
 	Flags   int32
 	Index   uint16
-	_    uint16
-	Data ifData
+	_       uint16
+	Data    ifData
 }
 
 type IfMsghdr struct {
@@ -409,8 +398,8 @@ type IfMsghdr struct {
 	Type    uint8
 	Addrs   int32
 	Flags   int32
-	Index uint16
-	Data  IfData
+	Index   uint16
+	Data    IfData
 }
 
 type ifData struct {
@@ -465,8 +454,8 @@ type IfData struct {
 	Iqdrops     uint32
 	Noproto     uint32
 	Hwassist    uint32
-	Epoch      int32
-	Lastchange Timeval
+	Epoch       int32
+	Lastchange  Timeval
 }
 
 type IfaMsghdr struct {
@@ -511,8 +500,8 @@ type RtMsghdr struct {
 	Seq     int32
 	Errno   int32
 	Fmask   int32
-	Inits uint32
-	Rmx   RtMetrics
+	Inits   uint32
+	Rmx     RtMetrics
 }
 
 type RtMetrics struct {
@@ -569,8 +558,8 @@ type BpfInsn struct {
 }
 
 type BpfHdr struct {
-	Tstamp Timeval
-	Caplen uint32
+	Tstamp  Timeval
+	Caplen  uint32
 	Datalen uint32
 	Hdrlen  uint16
 	_       [2]byte

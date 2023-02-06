@@ -64,9 +64,9 @@ type Utimbuf struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int32
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int32
 	Ixrss    int32
 	Idrss    int32
 	Isrss    int32
@@ -95,11 +95,11 @@ type Stat_t struct {
 	Size    int64
 	Blksize int32
 	_       [4]byte
-	Blocks int64
-	Atim   Timespec
-	Mtim   Timespec
-	Ctim   Timespec
-	_      uint32
+	Blocks  int64
+	Atim    Timespec
+	Mtim    Timespec
+	Ctim    Timespec
+	_       uint32
 	_       uint32
 }
 
@@ -256,12 +256,6 @@ type Sigset_t struct {
 }
 
 const _C__NSIG = 0x41
-
-const (
-	SIG_BLOCK   = 0x0
-	SIG_UNBLOCK = 0x1
-	SIG_SETMASK = 0x2
-)
 
 type Siginfo struct {
 	Signo int32

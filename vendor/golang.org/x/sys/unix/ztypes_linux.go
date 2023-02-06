@@ -168,8 +168,8 @@ type FscryptRemoveKeyArg struct {
 }
 
 type FscryptGetKeyStatusArg struct {
-	Key_spec FscryptKeySpecifier
-	_        [6]uint32
+	Key_spec     FscryptKeySpecifier
+	_            [6]uint32
 	Status       uint32
 	Status_flags uint32
 	User_count   uint32
@@ -1323,9 +1323,9 @@ type Tpacket3Hdr struct {
 	Len         uint32
 	Status      uint32
 	Mac         uint16
-	Net uint16
-	Hv1 TpacketHdrVariant1
-	_   [8]uint8
+	Net         uint16
+	Hv1         TpacketHdrVariant1
+	_           [8]uint8
 }
 
 type TpacketHdrVariant1 struct {
@@ -1351,9 +1351,9 @@ type TpacketHdrV1 struct {
 	Num_pkts            uint32
 	Offset_to_first_pkt uint32
 	Blk_len             uint32
-	Seq_num      uint64
-	Ts_first_pkt TpacketBDTS
-	Ts_last_pkt  TpacketBDTS
+	Seq_num             uint64
+	Ts_first_pkt        TpacketBDTS
+	Ts_last_pkt         TpacketBDTS
 }
 
 type TpacketReq struct {

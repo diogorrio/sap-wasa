@@ -64,9 +64,9 @@ type Utimbuf struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int64
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int64
 	Ixrss    int64
 	Idrss    int64
 	Isrss    int64
@@ -93,11 +93,11 @@ type Stat_t struct {
 	Rdev    uint64
 	Size    int64
 	Blksize int64
-	Blocks int64
-	Atim   Timespec
-	Mtim   Timespec
-	Ctim   Timespec
-	_      uint64
+	Blocks  int64
+	Atim    Timespec
+	Mtim    Timespec
+	Ctim    Timespec
+	_       uint64
 	_       uint64
 	_       uint64
 }
@@ -257,12 +257,6 @@ type Sigset_t struct {
 }
 
 const _C__NSIG = 0x41
-
-const (
-	SIG_BLOCK   = 0x0
-	SIG_UNBLOCK = 0x1
-	SIG_SETMASK = 0x2
-)
 
 type Siginfo struct {
 	Signo int32
@@ -686,8 +680,8 @@ type SysvIpcPerm struct {
 	_    uint64
 }
 type SysvShmDesc struct {
-	Perm  SysvIpcPerm
-	Atime int64
+	Perm   SysvIpcPerm
+	Atime  int64
 	Dtime  int64
 	Ctime  int64
 	Segsz  uint64

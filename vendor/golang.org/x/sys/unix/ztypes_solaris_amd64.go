@@ -51,9 +51,9 @@ type Utimbuf struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int64
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int64
 	Ixrss    int64
 	Idrss    int64
 	Isrss    int64
@@ -288,8 +288,8 @@ type IfMsghdr struct {
 	Type    uint8
 	Addrs   int32
 	Flags   int32
-	Index uint16
-	Data  IfData
+	Index   uint16
+	Data    IfData
 }
 
 type IfData struct {
@@ -334,8 +334,8 @@ type RtMsghdr struct {
 	Seq     int32
 	Errno   int32
 	Use     int32
-	Inits uint32
-	Rmx   RtMetrics
+	Inits   uint32
+	Rmx     RtMetrics
 }
 
 type RtMetrics struct {
@@ -389,8 +389,8 @@ type BpfTimeval struct {
 }
 
 type BpfHdr struct {
-	Tstamp BpfTimeval
-	Caplen uint32
+	Tstamp  BpfTimeval
+	Caplen  uint32
 	Datalen uint32
 	Hdrlen  uint16
 	_       [2]byte
@@ -480,38 +480,3 @@ const (
 	MOUNTEDOVER        = 0x40000000
 	FILE_EXCEPTION     = 0x60000070
 )
-
-const (
-	TUNNEWPPA = 0x540001
-	TUNSETPPA = 0x540002
-
-	I_STR     = 0x5308
-	I_POP     = 0x5303
-	I_PUSH    = 0x5302
-	I_LINK    = 0x530c
-	I_UNLINK  = 0x530d
-	I_PLINK   = 0x5316
-	I_PUNLINK = 0x5317
-
-	IF_UNITSEL = -0x7ffb8cca
-)
-
-type strbuf struct {
-	Maxlen int32
-	Len    int32
-	Buf    *int8
-}
-
-type Strioctl struct {
-	Cmd    int32
-	Timout int32
-	Len    int32
-	Dp     *int8
-}
-
-type Lifreq struct {
-	Name   [32]int8
-	Lifru1 [4]byte
-	Type   uint32
-	Lifru  [336]byte
-}

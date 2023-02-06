@@ -59,9 +59,9 @@ type Timezone struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int64
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int64
 	Ixrss    int64
 	Idrss    int64
 	Isrss    int64
@@ -97,11 +97,11 @@ type Stat_t struct {
 	Uid      uint32
 	Gid      uint32
 	Rdev     uint64
-	Ssize   int32
-	Atim    Timespec
-	Mtim    Timespec
-	Ctim    Timespec
-	Blksize int64
+	Ssize    int32
+	Atim     Timespec
+	Mtim     Timespec
+	Ctim     Timespec
+	Blksize  int64
 	Blocks   int64
 	Vfstype  int32
 	Vfs      uint32
@@ -341,9 +341,9 @@ type Statfs_t struct {
 	Bfree     uint64
 	Bavail    uint64
 	Files     uint64
-	Ffree   uint64
-	Fsid    Fsid64_t
-	Vfstype int32
+	Ffree     uint64
+	Fsid      Fsid64_t
+	Vfstype   int32
 	Fsize     uint64
 	Vfsnumber int32
 	Vfsoff    int32

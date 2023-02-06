@@ -32,9 +32,9 @@ type Timeval struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int64
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int64
 	Ixrss    int64
 	Idrss    int64
 	Isrss    int64
@@ -64,16 +64,16 @@ type Stat_t struct {
 	Nlink   uint32
 	Uid     uint32
 	Gid     uint32
-	Rdev int32
-	Atim Timespec
-	Mtim Timespec
-	Ctim Timespec
-	Size int64
+	Rdev    int32
+	Atim    Timespec
+	Mtim    Timespec
+	Ctim    Timespec
+	Size    int64
 	Blocks  int64
 	Blksize int32
 	Flags   uint32
-	Gen  uint32
-	_    Timespec
+	Gen     uint32
+	_       Timespec
 }
 
 type Statfs_t struct {
@@ -89,9 +89,9 @@ type Statfs_t struct {
 	F_syncwrites  uint64
 	F_syncreads   uint64
 	F_asyncwrites uint64
-	F_asyncreads uint64
-	F_fsid       Fsid
-	F_namemax    uint32
+	F_asyncreads  uint64
+	F_fsid        Fsid
+	F_namemax     uint32
 	F_owner       uint32
 	F_ctime       uint64
 	F_fstypename  [16]byte
@@ -281,8 +281,8 @@ type IfMsghdr struct {
 	Pad2    uint8
 	Addrs   int32
 	Flags   int32
-	Xflags int32
-	Data   IfData
+	Xflags  int32
+	Data    IfData
 }
 
 type IfData struct {
@@ -349,8 +349,8 @@ type RtMsghdr struct {
 	Pid      int32
 	Seq      int32
 	Errno    int32
-	Inits uint32
-	Rmx   RtMetrics
+	Inits    uint32
+	Rmx      RtMetrics
 }
 
 type RtMetrics struct {
@@ -401,8 +401,8 @@ type BpfInsn struct {
 }
 
 type BpfHdr struct {
-	Tstamp BpfTimeval
-	Caplen uint32
+	Tstamp  BpfTimeval
+	Caplen  uint32
 	Datalen uint32
 	Hdrlen  uint16
 	_       [2]byte

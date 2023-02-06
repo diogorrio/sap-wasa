@@ -2,11 +2,11 @@
 	"name": "teapot",
 	"version": "0.0.0",
 	"scripts": {
-		"dev": "node_modules/.bin/vite",
-		"build-dev": "node_modules/.bin/vite build --mode development",
-		"build-prod": "node_modules/.bin/vite build --mode production",
-		"build-embed": "node_modules/.bin/vite build --mode production --base=/dashboard/",
-		"preview": "node_modules/.bin/vite preview --port 4173"
+		"dev": "vite",
+		"build-dev": "vite build --mode development",
+		"build-prod": "vite build --mode production",
+		"build-embed": "vite build --mode production --base=/dashboard/",
+		"preview": "vite preview --port 4173"
 	},
 	"dependencies": {
 		"axios": "^0.27.2",

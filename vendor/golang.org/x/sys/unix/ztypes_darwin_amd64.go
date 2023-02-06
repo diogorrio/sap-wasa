@@ -38,9 +38,9 @@ type Timeval32 struct {
 }
 
 type Rusage struct {
-	Utime  Timeval
-	Stime  Timeval
-	Maxrss int64
+	Utime    Timeval
+	Stime    Timeval
+	Maxrss   int64
 	Ixrss    int64
 	Idrss    int64
 	Isrss    int64
@@ -70,12 +70,12 @@ type Stat_t struct {
 	Ino     uint64
 	Uid     uint32
 	Gid     uint32
-	Rdev int32
-	Atim Timespec
-	Mtim Timespec
-	Ctim Timespec
-	Btim Timespec
-	Size int64
+	Rdev    int32
+	Atim    Timespec
+	Mtim    Timespec
+	Ctim    Timespec
+	Btim    Timespec
+	Size    int64
 	Blocks  int64
 	Blksize int32
 	Flags   uint32
@@ -91,9 +91,9 @@ type Statfs_t struct {
 	Bfree       uint64
 	Bavail      uint64
 	Files       uint64
-	Ffree uint64
-	Fsid  Fsid
-	Owner uint32
+	Ffree       uint64
+	Fsid        Fsid
+	Owner       uint32
 	Type        uint32
 	Flags       uint32
 	Fssubtype   uint32
@@ -229,9 +229,9 @@ type XVSockPCB struct {
 	Xvp_peer_rxhiwat uint32
 	Xvp_peer_rxcnt   uint32
 	Xvp_last_pid     int32
-	Xvp_gencnt uint64
-	Xv_socket  XSocket
-	_          [4]byte
+	Xvp_gencnt       uint64
+	Xv_socket        XSocket
+	_                [4]byte
 }
 
 type XSocket struct {
@@ -250,10 +250,10 @@ type XSocket struct {
 	So_timeo     int16
 	So_error     uint16
 	So_pgid      int32
-	So_oobmark uint32
-	So_rcv     XSockbuf
-	So_snd     XSockbuf
-	So_uid     uint32
+	So_oobmark   uint32
+	So_rcv       XSockbuf
+	So_snd       XSockbuf
+	So_uid       uint32
 }
 
 type XSocket64 struct {
@@ -272,10 +272,10 @@ type XSocket64 struct {
 	So_timeo     int16
 	So_error     uint16
 	So_pgid      int32
-	So_oobmark uint32
-	So_rcv     XSockbuf
-	So_snd     XSockbuf
-	So_uid     uint32
+	So_oobmark   uint32
+	So_rcv       XSockbuf
+	So_snd       XSockbuf
+	So_uid       uint32
 }
 
 type XSockbuf struct {
@@ -454,8 +454,8 @@ type IfMsghdr struct {
 	Type    uint8
 	Addrs   int32
 	Flags   int32
-	Index uint16
-	Data  IfData
+	Index   uint16
+	Data    IfData
 }
 
 type IfData struct {
@@ -531,8 +531,8 @@ type RtMsghdr struct {
 	Seq     int32
 	Errno   int32
 	Use     int32
-	Inits uint32
-	Rmx   RtMetrics
+	Inits   uint32
+	Rmx     RtMetrics
 }
 
 type RtMetrics struct {
@@ -581,8 +581,8 @@ type BpfInsn struct {
 }
 
 type BpfHdr struct {
-	Tstamp Timeval32
-	Caplen uint32
+	Tstamp  Timeval32
+	Caplen  uint32
 	Datalen uint32
 	Hdrlen  uint16
 	_       [2]byte
@@ -658,11 +658,11 @@ const SizeofKinfoProc = 0x288
 
 type Eproc struct {
 	Paddr   uintptr
-	Sess  uintptr
-	Pcred Pcred
-	Ucred Ucred
-	Vm    Vmspace
-	Ppid  int32
+	Sess    uintptr
+	Pcred   Pcred
+	Ucred   Ucred
+	Vm      Vmspace
+	Ppid    int32
 	Pgid    int32
 	Jobc    int16
 	Tdev    int32
@@ -768,8 +768,8 @@ type SysvIpcPerm struct {
 	_    int32
 }
 type SysvShmDesc struct {
-	Perm  SysvIpcPerm
-	Segsz uint64
+	Perm   SysvIpcPerm
+	Segsz  uint64
 	Lpid   int32
 	Cpid   int32
 	Nattch uint16
