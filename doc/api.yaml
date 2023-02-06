@@ -1,0 +1,268 @@
+openapi: 3.0.0
+servers:
+  - url: "http://localhost:3000"
+info:
+  title: WASA Homework enroll
+  description: |-
+    The application is collecting students information (student ID, name, repository URL) and it is providing an SSH key
+    that the student should configure in their repository.
+  version: 1.0.0
+tags:
+  - name: Enrollment
+  - name: Results
+paths:
+  /enroll/:
+    post:
+      tags: ["Enrollment"]
+      operationId: enrollStudent
+      summary: Enroll a new student in the system, and provides the public key.
+      description: |-
+        This endpoint receives the information about the student to enroll, generates a new SSH key pair and return the
+        public key.
+        If the user is already enrolled, this method returns an error.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentEnrollRequest"
+      responses:
+        "202":
+          description: Student enrolled successfully, public key returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentEnrollResult"
+        "409":
+          description: The user is already enrolled, cannot proceed
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/:
+    get:
+      tags: [ "Results" ]
+      operationId: listResults
+      summary: Return the list of all students with their results
+      description: |-
+        Return a list of result object.
+        Objects contain the result of the homework validation for each student.
+      responses:
+        "200":
+          description: List retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultList"
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/{studentId}/git:
+    parameters:
+      - $ref: '#/components/parameters/StudentID'
+    get:
+      tags: [ "Results" ]
+      operationId: getGitLog
+      summary: Return the log for Git actions
+      description: |-
+        Return the output of Git commands that were used to clone the repository.
+      responses:
+        "200":
+          description: Git log
+          content:
+            text/plain: {}
+        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/{studentId}/openapi:
+    parameters:
+      - $ref: '#/components/parameters/StudentID'
+    get:
+      tags: [ "Results" ]
+      operationId: getOpenAPILog
+      summary: Return the reason for OpenAPI score
+      description: |-
+        Return a descriptive text for the OpenAPI score.
+      responses:
+        "200":
+          description: OpenAPI score log
+          content:
+            text/plain: {}
+        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/{studentId}/golang:
+    parameters:
+      - $ref: '#/components/parameters/StudentID'
+    get:
+      tags: [ "Results" ]
+      operationId: getGoLog
+      summary: Return the reason for GoLang score
+      description: |-
+        Return a descriptive text for the GoLang score.
+      responses:
+        "200":
+          description: GoLang score log
+          content:
+            text/plain: {}
+        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/{studentId}/vue:
+    parameters:
+      - $ref: '#/components/parameters/StudentID'
+    get:
+      tags: [ "Results" ]
+      operationId: getVueLog
+      summary: Return the reason for Vue.js score
+      description: |-
+        Return a descriptive text for the Vue.js score.
+      responses:
+        "200":
+          description: Vue.js score log
+          content:
+            text/plain: {}
+        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /results/{studentId}/docker:
+    parameters:
+      - $ref: '#/components/parameters/StudentID'
+    get:
+      tags: [ "Results" ]
+      operationId: getDockerLog
+      summary: Return the reason for Docker score
+      description: |-
+        Return a descriptive text for the Docker score.
+      responses:
+        "200":
+          description: Docker score log
+          content:
+            text/plain: {}
+        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+components:
+  schemas:
+    StudentEnrollRequest:
+      title: Student enroll form data
+      description: |-
+        Student enroll request.
+        It contains all necessary data to enroll the student in the system for homework evaluation.
+      type: object
+      properties:
+        studentID:
+          $ref: '#/components/schemas/StudentID'
+        firstName:
+          description: Student first name
+          type: string
+          pattern: ^.*?$
+          minLength: 2
+          maxLength: 32
+          example: John
+        lastName:
+          description: Student last name / family name
+          type: string
+          pattern: ^.*?$
+          minLength: 2
+          maxLength: 32
+          example: Doe
+        email:
+          description: Student institutional e-mail address
+          type: string
+          format: email
+          pattern: "@studenti\\.uniroma1\\.it$"
+          minLength: 25
+          maxLength: 70
+          example: doe.1234567@studenti.uniroma1.it
+        repoURL:
+          description: URL of the Git repository with all homeworks
+          type: string
+          pattern: "^(ssh://)?git@.*"
+          minLength: 5
+          maxLength: 200
+          example: git@github.com:yourname/yourrepo.git
+
+    StudentEnrollResult:
+      title: Student enroll response
+      description: The response contains the SSH used for accessing the Git repository.
+      type: object
+      properties:
+        publicKey:
+          description: SSH public key (used as Deploy Key in SSH repos)
+          type: string
+          minLength: 20
+          maxLength: 200
+          example: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ1pP7eWBFEMmf494e10G2242GoWB/pz6g3MO62Twpgy"
+
+    ResultList:
+      title: List of homework results
+      description: |-
+        Contains a list of homework results, one per student.
+        Each results contains the score for all homeworks, plus some additional information.
+      type: array
+      minItems: 0
+      maxItems: 300
+      items:
+        type: object
+        properties:
+          studentID:
+            $ref: '#/components/schemas/StudentID'
+          hash:
+            description: Git commit hash
+            type: string
+            example: abcdef012345
+            pattern: ^[a-fA-F0-9]+$
+            maxLength: 50
+            minLength: 5
+          openapi:
+            description: Score of the OpenAPI part (1st homework)
+            type: integer
+            minimum: 0
+            maximum: 30
+            example: 18
+          go:
+            description: Score of the Go part (2nd homework)
+            type: integer
+            minimum: 0
+            maximum: 30
+            example: 18
+          vue:
+            description: Score of the Vue.js part (3rd homework)
+            type: integer
+            minimum: 0
+            maximum: 30
+            example: 18
+          docker:
+            description: Score of the docker part (4th homework)
+            type: integer
+            minimum: 0
+            maximum: 30
+            example: 18
+          lastcheck:
+            description: Last time the homework was checked
+            type: string
+            format: date-time
+            example: 2020-01-03T16:12:58Z
+            pattern: ^[0-9:A-Z-]*$
+
+    StudentID:
+      description: Student identifier (matricola)
+      type: integer
+      minimum: 1
+      maximum: 9999999
+      example: 1234567
+
+  parameters:
+    StudentID:
+      in: path
+      required: true
+      description: Student identifier (matricola)
+      name: studentId
+      schema:
+        $ref: '#/components/schemas/StudentID'
+
+  responses:
+    ResultNotFound:
+      description: The requested result has not been found.
+    BadRequest:
+      description: The request was not compliant with the documentation (eg. missing fields, etc)
+    InternalServerError:
+      description: The server encountered an internal error. Further info in server logs
