@@ -30,7 +30,7 @@ info:
     The API will return the user identifier you need to pass into the Authorization header in any other API.'
     There won't be HTTP sessions or cookies.
   version: 1.0.0
-  license: MIT
+  #license: MIT - commented it was documenting an error.
 
 tags:
   - name: "User"
@@ -49,7 +49,11 @@ tags:
     description: Endpoints for performing a login action
 
 paths:
-  # NOTE: Some operation IDs are renamed to fit the overall styling of the document.
+  # NOTES:
+  # Some operation IDs are renamed to fit the overall styling of the document.
+  # Additional functions were also added for the sole purpose of better organisation.
+  # There are residual instances of ideas I would've liked to implement, but given their non-necessity,
+  # some of them were forgotten and not deleted, since the file is quite long to monitor constantly
 
   # Login Tag Related
   /session:
@@ -220,6 +224,7 @@ paths:
                 $ref: "#/components/schemas/UserArray"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /user/{user_id}/get_following:
@@ -240,9 +245,11 @@ paths:
                 $ref: "#/components/schemas/UserArray"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   # Photo Tag Related
+  # Empty, as all the 'get' requests I would've written weren't needed, after all.
 
   # User-Photo Interaction Related
   /user/{user_id}/photo/{photo_id}:
@@ -279,6 +286,7 @@ paths:
                 $ref: "#/components/schemas/Photo"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
       tags: ["User", "Photo"]
@@ -291,11 +299,158 @@ paths:
           description: Successful request on deleting a photo.
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /user/{user_id}/photo/{photo_id}/like_photo{like_id}:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/photo_id"
+      - $ref: "#/components/parameters/like_id"
+    put:
+      tags: ["User", "Photo", "Like"]
+      operationId: add_like
+      description: Performs a like addition action on a user's photo.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on adding a like.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LikeAction"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User", "Photo", "Like"]
+      operationId: remove_like
+      description: Performs a like removal action on a user's photo.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on removing a like.
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /user/{user_id}/photo/{photo_id}/comment_photo{comment_id}:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/photo_id"
+      - $ref: "#/components/parameters/comment_id"
+    put:
+      tags: ["User", "Photo", "Comment"]
+      operationId: add_comment
+      description: Performs a comment addition action on a user's photo.
+      requestBody:
+        description: The comment itself being added.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentBody"
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on adding a comment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentAction"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User", "Photo", "Comment"]
+      operationId: remove_comment
+      description: Performs a comment removal action on a user's photo, only feasible by the owner of the comment.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on removing a comment.
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   # User-User Interaction Related
+  /user/{user_id}/follow_user/{follow_id}:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/follow_id"
+    put:
+      tags: ["User", "Follow"]
+      operationId: follow_user
+      description: Completes the following of a user.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on following a user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FollowAction"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User", "Follow"]
+      operationId: unfollow_user
+      description: Completes the unfollowing of a user.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on unfollowing a user.
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{user_id}/
+  /user/{user_id}/ban_user/{ban_id}:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/ban_id"
+    put:
+      tags: ["User", "Ban"]
+      operationId: ban_user
+      description: Completes the banning of a user.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on banning a user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BanAction"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User", "Ban"]
+      operationId: unban_user
+      description: Completes the unbanning of a previously banned user.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on unbanning a user.
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
   # Search Mechanism Related, although mentioned in the project description, apparently not needed?
   # /search_method:
@@ -308,7 +463,7 @@ components:
     UnauthorizedRequest:
       description: The entity responsible for the request does not have authorization to access the resource.
     NotFound:
-      description: The user was not found.
+      description: The requested target entity was not found.
     InternalServerError:
       description: The server encountered an internal error. Further info in server logs.
 
@@ -337,6 +492,54 @@ components:
         example: Photo2
         minLength: 6
         maxLength: 11
+      in: path
+      required: true
+
+    follow_id:
+      name: follow_id
+      description: The follow_id uniquely identifies a follower/following user.
+      schema:
+        type: string
+        example: User2
+        minLength: 5
+        maxLength: 10
+        readOnly: true
+      in: path
+      required: true
+
+    ban_id:
+      name: ban_id
+      description: The ban_id uniquely identifies a possibly banned user.
+      schema:
+        type: string
+        example: User2
+        minLength: 5
+        maxLength: 10
+        readOnly: true
+      in: path
+      required: true
+
+    like_id:
+      name: like_id
+      description: The like_id uniquely identifies a like performed by a user.
+      schema:
+        type: string
+        example: Like2
+        minLength: 5
+        maxLength: 10
+        readOnly: true
+      in: path
+      required: true
+
+    comment_id:
+      name: comment_id
+      description: The comment_id uniquely identifies a comment.
+      schema:
+        type: string
+        example: Comment2
+        minLength: 8
+        maxLength: 13
+        readOnly: true
       in: path
       required: true
 
@@ -459,10 +662,112 @@ components:
           example: 222
           minimum: 0
 
-    Like:
+    FollowAction:
+      description: The object that represents a following action.
+      type: object
+      properties:
+        user_id:
+          description: The user_id uniquely identifies the following user.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        followed_id:
+          description: The followed_id uniquely identifies the followed user.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
 
-    Comment:
+    BanAction:
+      description: The object that represents a banning action.
+      type: object
+      properties:
+        user_id:
+          description: The user_id uniquely identifies the banning user.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        banned_id:
+          description: The banned_id uniquely identifies the banned user.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
 
+    LikeAction:
+      description: The object that represents a like action.
+      type: object
+      properties:
+        user_id:
+          description: The user_id uniquely identifies the user liking the photo.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        liked_id:
+          description: The liked_id uniquely identifies the user whose photo received was liked.
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        photo_id:
+          description: The ID that uniquely identifies a photo (differentiates them from each other).
+          type: string
+          example: Photo2
+          minLength: 6
+          maxLength: 11
+        like_id:
+          description: The like_id uniquely identifies a like performed by a user.
+          type: string
+          example: Like2
+          minLength: 5
+          maxLength: 10
+
+    CommentBody:
+      description: The object that represents a comment's content.
+      type: object
+      properties:
+        content:
+          description: The body/content of the comment itself.
+          type: string
+          example: Welcome to WASA.
+          minLength: 1
+          maxLength: 144
+
+    CommentAction:
+      description: The object that represents a commenting action.
+      type: object
+      properties:
+        user_id:
+          description: The user_id uniquely identifies the user commenting the photo.
+        commented_id:
+          description: The commented_id uniquely identifies the user receiving the comment.
+        photo_id:
+          description: The photo_id uniquely identifies the photo being commented on.
+        comment_array:
+          description: The comment_array enumerates all the comments done to the photo in question.
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/CommentBody"
+
+# TASK LOG (TO IGNORE)
+# doLogin DONE
+# setMyUserName DONE
+# uploadPhoto DONE
+# followUser DONE
+# unfollowUser DONE
+# banUser DONE
+# unbanUser DONE
+# getUserProfile DONE
+# getMyStream DONE
+# likePhoto DONE
+# unlikePhoto DONE
+# commentPhoto DONE
+# uncommentPhoto DONE
+# deletePhoto DONE
 
 
 
