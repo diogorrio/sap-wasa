@@ -41,29 +41,29 @@ If you want to launch the WebUI, open a new tab and launch:
 npm run dev
 ```
 
-## How to build container images
+### How to build container images
 
-### Backend
+#### Backend
 
 ```sh
 $ docker build -t wasa-photos-backend:latest -f Dockerfile.backend .
 ```
 
-### Frontend
+#### Frontend
 
 ```sh
 $ docker build -t wasa-photos-frontend:latest -f Dockerfile.frontend .
 ```
 
-## How to run container images
+### How to run container images
 
-### Backend
+#### Backend
 
 ```sh
 $ docker run -it --rm -p 3000:3000 wasa-photos-backend:latest
 ```
 
-### Frontend
+#### Frontend
 
 ```
 $ docker run -it --rm -p 8081:80 wasa-photos-frontend:latest
@@ -76,6 +76,6 @@ V2. Main structure unfolded.\
 V3. OpenAPI built, extension of the README.md file.\
 V4.
 
-## License
+### License
 
 See [LICENSE](LICENSE).
