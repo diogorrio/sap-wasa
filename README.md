@@ -4,6 +4,8 @@
 This is a project done through the Web and Software Architecture Course, 
 taught at the Università degli Studi di Roma "La Sapienza".
 
+To access the project description, refer to the \doc\api.yaml file (ll. 8 - 31).
+
 ### How To Build the WebApp
 
 Please refer to following original commands:
