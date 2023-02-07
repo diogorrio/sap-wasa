@@ -1,268 +1,468 @@
 openapi: 3.0.0
+
 servers:
   - url: "http://localhost:3000"
+
 info:
-  title: WASA Homework enroll
+  title: The WASAPhoto Project
   description: |-
-    The application is collecting students information (student ID, name, repository URL) and it is providing an SSH key
-    that the student should configure in their repository.
+    The WASAPhoto Project uses an API that is developed having the following design in mind;
+
+    Each user will have access to a stream of images (photos), in reverse chronological order.
+    Each photo will contain information on the time of publishing (date and time) and the amount of likes and comments.
+    The displayed photos will originate from other users the user in question follows.
+    They can place likes, as well as remove them (on other users' photo(s)).
+    They can comment, as well as remove their own (on any user's photo(s)).
+
+    Similarly, users can ban other users, as well as retract the ban.
+    A ban means the banner prevents the banned from seeing the banner's information.
+
+    Users have profiles. A profile shows the stream of photos (in reverse), the amount of photos uploaded and
+    the user's followers and following.
+    Users can change usernames, upload photos (as well as remove them) and follow other users (as well as unfollow them).
+    Photo removal also removes its likes and comments.
+
+    Users can search another user's profile via their username.
+
+    Logins are simplified, i.e., they occur just by specifying the user's username.
+    From the official project description, 'If the username already exists, the user is logged in.
+    If the username is new, the user is registered and logged in.
+    The API will return the user identifier you need to pass into the Authorization header in any other API.'
+    There won't be HTTP sessions or cookies.
   version: 1.0.0
+  license: MIT
+
 tags:
-  - name: Enrollment
-  - name: Results
+  - name: "User"
+    description: Endpoints for user actions
+  - name: "Photo"
+    description: Endpoints for photo actions
+  - name: "Like"
+    description: Endpoints for a like (or removal of) actions
+  - name: "Comment"
+    description: Endpoints for commenting actions
+  - name: "Ban"
+    description: Endpoints for banning actions
+  - name: "Follow"
+    description: Endpoints for following (or unfollowing) actions
+  - name: "Login"
+    description: Endpoints for performing a login action
+
 paths:
-  /enroll/:
+  # NOTE: Some operation IDs are renamed to fit the overall styling of the document.
+
+  # Login Tag Related
+  /session:
+    #* doLogin (from the official course description template)
     post:
-      tags: ["Enrollment"]
-      operationId: enrollStudent
-      summary: Enroll a new student in the system, and provides the public key.
+      tags: ["Login"]
+      summary: Performs a login action
       description: |-
-        This endpoint receives the information about the student to enroll, generates a new SSH key pair and return the
-        public key.
-        If the user is already enrolled, this method returns an error.
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: do_login
       requestBody:
+        description: Presents the user details.
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/StudentEnrollRequest"
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  pattern: 'ˆ.*?$'
+                  example: User2
+                  minLength: 5
+                  maxLength: 10
+        required: true
       responses:
-        "202":
-          description: Student enrolled successfully, public key returned
+        '201':
+          description: User login action successful.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StudentEnrollResult"
-        "409":
-          description: The user is already enrolled, cannot proceed
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: User2
+                    minLength: 5
+                    maxLength: 10
+                  user_name:
+                    type: string
+                    example: Alain
+                    minLength: 3
+                    maxLength: 15
+        # Comments like these two below direct to another, easier to read, location on this file (avoids clogging)
+        '400': {$ref: "#/components/responses/BadRequest"}
+        '500': {$ref: "#/components/responses/InternalServerError"}
+
+  # User Tag Related
+  /user/{user_id}/get_user_profile:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+    get:
+      operationId: get_user_profile
+      tags: ["User"]
+      summary: Get user profile.
+      description: Obtain information on the user in question, user ID, etc. Their profile, essentially.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful request on user's profile information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/:
-    get:
-      tags: [ "Results" ]
-      operationId: listResults
-      summary: Return the list of all students with their results
-      description: |-
-        Return a list of result object.
-        Objects contain the result of the homework validation for each student.
+  /user/{user_id}/set_user_id:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+    put:
+      operationId: set_user_id
+      tags: ["User"]
+      summary: Set user info (ID)
+      description: Set new user information, a new ID.
+      requestBody:
+        description: Newly set user ID.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          description: List retrieved successfully
+          description: Successful request on setting a new user ID.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResultList"
+                $ref: "#/components/schemas/User"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/{studentId}/git:
+  /user/{user_id}/set_user_name:
     parameters:
-      - $ref: '#/components/parameters/StudentID'
-    get:
-      tags: [ "Results" ]
-      operationId: getGitLog
-      summary: Return the log for Git actions
-      description: |-
-        Return the output of Git commands that were used to clone the repository.
+      - $ref: "#/components/parameters/user_id"
+    put:
+      operationId: set_user_name
+      tags: ["User"]
+      summary: Set the username
+      description: Set new user information, a new username.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Newly set username.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  description: The name that a user chooses for themselves.
+                  type: string
+                  example: Bobby
+                  minLength: 3
+                  maxLength: 15
+        required: true
       responses:
-        "200":
-          description: Git log
-          content:
-            text/plain: {}
-        "404": { $ref: "#/components/responses/ResultNotFound" }
+        "200": { description: Username changed successfully }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/{studentId}/openapi:
+  /user/{user_id}/get_user_stream:
     parameters:
-      - $ref: '#/components/parameters/StudentID'
+      - $ref: "#/components/parameters/user_id"
     get:
-      tags: [ "Results" ]
-      operationId: getOpenAPILog
-      summary: Return the reason for OpenAPI score
-      description: |-
-        Return a descriptive text for the OpenAPI score.
+      tags: ["User"]
+      operationId: get_user_stream
+      summary: Get the stream of a user.
+      description: Display the stream of photos of users the user follows, in reverse chronological order.
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          description: OpenAPI score log
+          description: Successful request on this user's stream of photos.
           content:
-            text/plain: {}
-        "404": { $ref: "#/components/responses/ResultNotFound" }
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stream"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/{studentId}/golang:
+  /user/{user_id}/get_followers:
     parameters:
-      - $ref: '#/components/parameters/StudentID'
+      - $ref: "#/components/parameters/user_id"
     get:
-      tags: [ "Results" ]
-      operationId: getGoLog
-      summary: Return the reason for GoLang score
-      description: |-
-        Return a descriptive text for the GoLang score.
+      tags: ["Follow"]
+      operationId: get_followers
+      description: Display the array of users that follow a user.
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          description: GoLang score log
+          description: Successful request on this user's follower list.
           content:
-            text/plain: {}
-        "404": { $ref: "#/components/responses/ResultNotFound" }
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserArray"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/{studentId}/vue:
+  /user/{user_id}/get_following:
     parameters:
-      - $ref: '#/components/parameters/StudentID'
+      - $ref: "#/components/parameters/user_id"
     get:
-      tags: [ "Results" ]
-      operationId: getVueLog
-      summary: Return the reason for Vue.js score
-      description: |-
-        Return a descriptive text for the Vue.js score.
+      tags: ["Follow"]
+      operationId: get_following
+      description: Display the array of users that a user is following.
+      security:
+        - bearerAuth: []
       responses:
         "200":
-          description: Vue.js score log
+          description: Successful request on the users following this user.
           content:
-            text/plain: {}
-        "404": { $ref: "#/components/responses/ResultNotFound" }
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserArray"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /results/{studentId}/docker:
+  # Photo Tag Related
+
+  # User-Photo Interaction Related
+  /user/{user_id}/photo/{photo_id}:
     parameters:
-      - $ref: '#/components/parameters/StudentID'
-    get:
-      tags: [ "Results" ]
-      operationId: getDockerLog
-      summary: Return the reason for Docker score
-      description: |-
-        Return a descriptive text for the Docker score.
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/photo_id"
+    put:
+      tags: ["User", "Photo"]
+      operationId: upload_photo
+      description: A certain user upload a photo.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Newly published photo.
+        content:
+          photo_data:
+            schema:
+              description: The actual data carried by the photo, i.e., an image, a GIF eventually, etc.
+              type: object
+              properties:
+                photo_data:
+                  description: The data to be uploaded as a photo.
+                  type: string
+                  format: binary
+                  minLength: 1
+                  maxLength: 999
+        required: true
       responses:
-        "200":
-          description: Docker score log
+        "201":
+          description: Successful request on uploading a photo.
           content:
-            text/plain: {}
-        "404": { $ref: "#/components/responses/ResultNotFound" }
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User", "Photo"]
+      operationId: delete_photo
+      description: A certain user deletes a previously self-uploaded photo.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Successful request on deleting a photo.
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  # User-User Interaction Related
+
+  /user/{user_id}/
+
+  # Search Mechanism Related, although mentioned in the project description, apparently not needed?
+  # /search_method:
 
 components:
-  schemas:
-    StudentEnrollRequest:
-      title: Student enroll form data
-      description: |-
-        Student enroll request.
-        It contains all necessary data to enroll the student in the system for homework evaluation.
-      type: object
-      properties:
-        studentID:
-          $ref: '#/components/schemas/StudentID'
-        firstName:
-          description: Student first name
-          type: string
-          pattern: ^.*?$
-          minLength: 2
-          maxLength: 32
-          example: John
-        lastName:
-          description: Student last name / family name
-          type: string
-          pattern: ^.*?$
-          minLength: 2
-          maxLength: 32
-          example: Doe
-        email:
-          description: Student institutional e-mail address
-          type: string
-          format: email
-          pattern: "@studenti\\.uniroma1\\.it$"
-          minLength: 25
-          maxLength: 70
-          example: doe.1234567@studenti.uniroma1.it
-        repoURL:
-          description: URL of the Git repository with all homeworks
-          type: string
-          pattern: "^(ssh://)?git@.*"
-          minLength: 5
-          maxLength: 200
-          example: git@github.com:yourname/yourrepo.git
+  # From official template (plus addition(s)) - 400, 401, 404 and 500.
+  responses:
+    BadRequest:
+      description: The request was not compliant with the documentation (eg. missing fields, etc).
+    UnauthorizedRequest:
+      description: The entity responsible for the request does not have authorization to access the resource.
+    NotFound:
+      description: The user was not found.
+    InternalServerError:
+      description: The server encountered an internal error. Further info in server logs.
 
-    StudentEnrollResult:
-      title: Student enroll response
-      description: The response contains the SSH used for accessing the Git repository.
-      type: object
-      properties:
-        publicKey:
-          description: SSH public key (used as Deploy Key in SSH repos)
-          type: string
-          minLength: 20
-          maxLength: 200
-          example: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ1pP7eWBFEMmf494e10G2242GoWB/pz6g3MO62Twpgy"
-
-    ResultList:
-      title: List of homework results
-      description: |-
-        Contains a list of homework results, one per student.
-        Each results contains the score for all homeworks, plus some additional information.
-      type: array
-      minItems: 0
-      maxItems: 300
-      items:
-        type: object
-        properties:
-          studentID:
-            $ref: '#/components/schemas/StudentID'
-          hash:
-            description: Git commit hash
-            type: string
-            example: abcdef012345
-            pattern: ^[a-fA-F0-9]+$
-            maxLength: 50
-            minLength: 5
-          openapi:
-            description: Score of the OpenAPI part (1st homework)
-            type: integer
-            minimum: 0
-            maximum: 30
-            example: 18
-          go:
-            description: Score of the Go part (2nd homework)
-            type: integer
-            minimum: 0
-            maximum: 30
-            example: 18
-          vue:
-            description: Score of the Vue.js part (3rd homework)
-            type: integer
-            minimum: 0
-            maximum: 30
-            example: 18
-          docker:
-            description: Score of the docker part (4th homework)
-            type: integer
-            minimum: 0
-            maximum: 30
-            example: 18
-          lastcheck:
-            description: Last time the homework was checked
-            type: string
-            format: date-time
-            example: 2020-01-03T16:12:58Z
-            pattern: ^[0-9:A-Z-]*$
-
-    StudentID:
-      description: Student identifier (matricola)
-      type: integer
-      minimum: 1
-      maximum: 9999999
-      example: 1234567
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
 
   parameters:
-    StudentID:
+    user_id:
+      name: User ID
+      description: The user_id uniquely identifies a user.
+      schema:
+        type: string
+        example: User2
+        minLength: 5
+        maxLength: 10
       in: path
       required: true
-      description: Student identifier (matricola)
-      name: studentId
-      schema:
-        $ref: '#/components/schemas/StudentID'
 
-  responses:
-    ResultNotFound:
-      description: The requested result has not been found.
-    BadRequest:
-      description: The request was not compliant with the documentation (eg. missing fields, etc)
-    InternalServerError:
-      description: The server encountered an internal error. Further info in server logs
+    photo_id:
+      name: Photo ID
+      description: The photo_id uniquely identifies a photo.
+      schema:
+        type: string
+        example: Photo2
+        minLength: 6
+        maxLength: 11
+      in: path
+      required: true
+
+  schemas:
+
+    User:
+      description: The object that represents a single user.
+      type: object
+      properties:
+        user_id:
+          description: The ID that uniquely identifies a user (differentiates them from each other).
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        user_name:
+          description: The name that a user chooses for themselves.
+          type: string
+          example: Alain
+          minLength: 3
+          maxLength: 15
+        photo_nr:
+          description: The number of photos a certain user has.
+          type: integer
+          example: 22
+          minimum: 0
+        followers_nr:
+          description: The number of followers a certain user has.
+          type: integer
+          example: 222
+          minimum: 0
+        following_nr:
+          description: The number of users a certain user is following.
+          type: integer
+          example: 2222
+          minimum: 0
+
+    UserArray:
+      description: The object that represents an array of users
+      type: object
+      properties:
+        user_array:
+          description: The array of users, either following or followed by a user
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/User"
+
+    Stream:
+      description: The object that represents a single stream.
+      type: object
+      properties:
+        user_id:
+          description: The ID that uniquely identifies the target of a stream (differentiates them from each other).
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        stream_id:
+          description: The ID that uniquely identifies a stream.
+          type: string
+          example: Stream2
+          minLength: 7
+          maxLength: 12
+        stream:
+          description: The stream of photos of users the user follows, in reverse chronological order.
+          type: array
+          minItems: 0
+          maxItems: 499
+          items:
+            $ref: "#/components/schemas/Photo"
+
+    Photo:
+      description: The object that represents a single photo.
+      type: object
+      properties:
+        user_id:
+          description: The ID that uniquely identifies the photo's publisher (differentiates them from each other).
+          type: string
+          example: User2
+          minLength: 5
+          maxLength: 10
+        user_name:
+          description: The name that a user chooses for themselves.
+          type: string
+          example: Alain
+          minLength: 3
+          maxLength: 15
+        photo_id:
+          description: The ID that uniquely identifies a photo (differentiates them from each other).
+          type: string
+          example: Photo2
+          minLength: 6
+          maxLength: 11
+        photo_data:
+          description: The data to be uploaded as a photo.
+          type: string
+          format: binary
+          minLength: 1
+          maxLength: 999
+        photo_time:
+          description: The time of publishing of a photo.
+          type: string
+          pattern: "[0-9]{2}-[0-9]{2}-[0-9]{4} @ [0-9]{2}:[0-9]{2}"
+          example: "07-02-2023 @ 18:00"
+          minLength: 18
+          maxLength: 18
+        like_nr:
+          description: The number of likes a certain photo has.
+          type: integer
+          example: 22
+          minimum: 0
+        like:
+          description: Whether a photo is liked by a user.
+          type: boolean
+          example: true
+        comment_nr:
+          description: The number of comments a certain photo has.
+          type: integer
+          example: 222
+          minimum: 0
+
+    Like:
+
+    Comment:
+
+
+
+
