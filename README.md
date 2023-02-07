@@ -43,6 +43,6 @@ npm run dev
 
 ### Logger of main changes:
 V1. Enrolling so to obtain an SSH Key.\
-V2. Main structure unfolded.
-V3. OpenAPI built, extension of the README.md file.
+V2. Main structure unfolded.\
+V3. OpenAPI built, extension of the README.md file.\
 V4.
