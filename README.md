@@ -76,6 +76,6 @@ V2. Main structure unfolded.\
 V3. OpenAPI built, extension of the README.md file.\
 V4.
 
-### License
+## License
 
 See [LICENSE](LICENSE).
