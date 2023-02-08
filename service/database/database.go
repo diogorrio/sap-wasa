@@ -91,9 +91,32 @@ type Comment struct {
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	GetName() (string, error)
-	SetName(name string) error
-	// TODO: ALTER
+
+	// User Tag Related
+	setUserProfile(u User) (User, error)
+	setUserID(s string) (User, error)
+	setUsername(u User, s string) (User, error)
+	getUserStream(u User) ([]Photo, error)
+	getFollowers(u User, i int) (FollowAction, error)
+	getFollowing(u User, i int) (FollowAction, error)
+
+	// User-Photo Interaction Related
+	uploadPhoto(p Photo) (Photo, error)
+	deletePhoto(s string) error
+
+	addLike(l LikeAction) (LikeAction, error)
+	removeLike(s string) error
+
+	addComment(c CommentAction) (CommentAction, error)
+	removeComment(s string) error
+
+	// User-User Interaction Related
+	followUser(f FollowAction) (FollowAction, error)
+	unfollowUser(f FollowAction) error
+
+	banUser(b BanAction) (BanAction, error)
+	unbanUser(b BanAction) error
+
 	Ping() error
 }
 
@@ -109,16 +132,92 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
-	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
+	var table string
+
+	err := db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&table)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
-		_, err = db.Exec(sqlStmt)
+		userDB := `CREATE TABLE users (
+						user_id VARCHAR(20) NOT NULL PRIMARY KEY AUTOINCREMENT,
+						user_name VARCHAR(55) NOT NULL UNIQUE,
+						photo_nr INTEGER NOT NULL,
+						followers_nr INTEGER NOT NULL,
+						following_nr INTEGER NOT NULL
+					);`
+		_, err = db.Exec(userDB)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 	}
-	// TODO: ALTER
+
+	err = db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='photos';`).Scan(&table)
+	if errors.Is(err, sql.ErrNoRows) {
+		photoDB := `CREATE TABLE photos (
+    					user_id VARCHAR(20) NOT NULL,
+    					user_name VARCHAR(55) NOT NULL UNIQUE,
+						photo_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						photo_data VARCHAR(255),
+						photo_time DATE TIME,
+						like_nr INTEGER,
+						comment_nr INTEGER,
+                    	FOREIGN KEY (user_id) REFERENCES users(user_id)
+					);`
+		_, err = db.Exec(photoDB)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	err = db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='follows';`).Scan(&table)
+	if errors.Is(err, sql.ErrNoRows) {
+		followsDB := `CREATE TABLE follows (
+						user_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						followed_id VARCHAR(20) NOT NULL PRIMARY KEY
+					);`
+		_, err = db.Exec(followsDB)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	err = db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='bans';`).Scan(&table)
+	if errors.Is(err, sql.ErrNoRows) {
+		bansDB := `CREATE TABLE bans (
+						user_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						banned_id VARCHAR(20) NOT NULL PRIMARY KEY
+					);`
+		_, err = db.Exec(bansDB)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	err = db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&table)
+	if errors.Is(err, sql.ErrNoRows) {
+		likesDB := `CREATE TABLE likes (
+						user_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						liked_id VARCHAR(20) NOT NULL,
+						photo_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						like_id VARCHAR(20) NOT NULL
+					);`
+		_, err = db.Exec(likesDB)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	err = db.QueryRow(`SELECT * FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&table)
+	if errors.Is(err, sql.ErrNoRows) {
+		commentsDB := `CREATE TABLE comments (
+						user_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						commented_id VARCHAR(20) NOT NULL,
+						photo_id VARCHAR(20) NOT NULL PRIMARY KEY,
+						comment_body TEXT NOT NULL
+					);`
+		_, err = db.Exec(commentsDB)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
 
 	return &appdbimpl{
 		c: db,
