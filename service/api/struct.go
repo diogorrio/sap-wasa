@@ -79,20 +79,21 @@ func (u *User) toDatabase() database.User {
 	}
 }
 
-func (s *Stream) streamFromDatabase(stream database.Stream) {
-	s.UserID = stream.UserID
-	s.StreamID = stream.StreamID
-	s.PhotoStream = stream.PhotoStream
-}
-
-func (s *Stream) streamToDatabase() database.Stream {
-	return database.Stream{
-		UserID:      s.UserID,
-		StreamID:    s.StreamID,
-		PhotoStream: s.PhotoStream,
-	}
-
-}
+// Due to the non-convertibility of array instances, I had to drop this method
+//func (s *Stream) streamFromDatabase(stream database.Stream) {
+//	s.UserID = stream.UserID
+//	s.StreamID = stream.StreamID
+//	s.PhotoStream = stream.PhotoStream
+//}
+//
+//func (s *Stream) streamToDatabase() database.Stream {
+//	return database.Stream{
+//		UserID:      s.UserID,
+//		StreamID:    s.StreamID,
+//		PhotoStream: s.PhotoStream,
+//	}
+//
+//}
 
 func (p *Photo) photoFromDatabase(photo database.Photo) {
 	p.UserID = photo.UserID
@@ -158,21 +159,22 @@ func (l *LikeAction) likeActionToDatabase() database.LikeAction {
 	}
 }
 
-func (c *CommentAction) commentActionFromDatabase(commentAction database.CommentAction) {
-	c.UserID = commentAction.UserID
-	c.CommentedID = commentAction.CommentedID
-	c.PhotoID = commentAction.PhotoID
-	c.CommentArr = commentAction.CommentArr
-}
-
-func (c *CommentAction) commentActionToDatabase() database.CommentAction {
-	return database.CommentAction{
-		UserID:      c.UserID,
-		CommentedID: c.CommentedID,
-		PhotoID:     c.PhotoID,
-		CommentArr:  c.CommentArr,
-	}
-}
+// Same reasoning as per the stream.
+//func (c *CommentAction) commentActionFromDatabase(commentAction database.CommentAction) {
+//	c.UserID = commentAction.UserID
+//	c.CommentedID = commentAction.CommentedID
+//	c.PhotoID = commentAction.PhotoID
+//	c.CommentArr = commentAction.CommentArr
+//}
+//
+//func (c *CommentAction) commentActionToDatabase() database.CommentAction {
+//	return database.CommentAction{
+//		UserID:      c.UserID,
+//		CommentedID: c.CommentedID,
+//		PhotoID:     c.PhotoID,
+//		CommentArr:  c.CommentArr,
+//	}
+//}
 
 func (cb *Comment) commentFromDatabase(commentBodyAction database.Comment) {
 	cb.CommentBody = commentBodyAction.CommentBody
