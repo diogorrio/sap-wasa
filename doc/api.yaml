@@ -256,7 +256,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/user_id"
       - $ref: "#/components/parameters/photo_id"
-    put:
+    post:
       tags: ["User", "Photo"]
       operationId: upload_photo
       description: A certain user upload a photo.
@@ -343,7 +343,7 @@ paths:
       - $ref: "#/components/parameters/user_id"
       - $ref: "#/components/parameters/photo_id"
       - $ref: "#/components/parameters/comment_id"
-    put:
+    post:
       tags: ["User", "Photo", "Comment"]
       operationId: add_comment
       description: Performs a comment addition action on a user's photo.

@@ -36,11 +36,64 @@ import (
 	"fmt"
 )
 
+type User struct {
+	UserID      string `json:"user_id"`
+	UserName    string `json:"user_name"`
+	PhotoNr     int    `json:"photo_nr"`
+	FollowersNr int    `json:"followers_nr"`
+	FollowingNr int    `json:"following_nr"`
+}
+
+type Stream struct {
+	UserID      string  `json:"user_id"`
+	StreamID    string  `json:"stream_id"`
+	PhotoStream []Photo `json:"stream"`
+}
+
+type Photo struct {
+	UserID    string `json:"user_id"`
+	UserName  string `json:"user_name"`
+	PhotoID   string `json:"photo_id"`
+	PhotoData string `json:"photo_data"`
+	PhotoTime string `json:"photo_time"`
+	LikeNr    int    `json:"like_nr"`
+	Liked     bool   `json:"like"`
+	CommentNr int    `json:"comment_nr"`
+}
+
+type FollowAction struct {
+	UserID     string `json:"user_id"`
+	FollowedID string `json:"followed_id"`
+}
+
+type BanAction struct {
+	UserID   string `json:"user_id"`
+	BannedID string `json:"banned_id"`
+}
+
+type LikeAction struct {
+	UserID  string `json:"user_id"`
+	LikedID string `json:"liked_id"`
+	PhotoID string `json:"photo_id"`
+	LikeID  string `json:"like_id"`
+}
+
+type CommentAction struct {
+	UserID      string    `json:"user_id"`
+	CommentedID string    `json:"commented_id"`
+	PhotoID     string    `json:"photo_id"`
+	CommentArr  []Comment `json:"comment_array"`
+}
+
+type Comment struct {
+	CommentBody string `json:"content"`
+}
+
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
-
+	// TODO: ALTER
 	Ping() error
 }
 
@@ -65,6 +118,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 	}
+	// TODO: ALTER
 
 	return &appdbimpl{
 		c: db,
