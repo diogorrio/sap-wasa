@@ -93,19 +93,18 @@ type Comment struct {
 type AppDatabase interface {
 
 	// User Tag Related
-	setUserProfile(u User) (User, error)
-	setUserID(s string) (User, error)
+	setUserID(u User, s string) (User, error)
 	setUsername(u User, s string) (User, error)
 	getUserStream(u User) ([]Photo, error)
-	getFollowers(u User, i int) (FollowAction, error)
-	getFollowing(u User, i int) (FollowAction, error)
+	getFollowers(u User) (int, error)
+	getFollowing(u User) (int, error)
 
 	// User-Photo Interaction Related
 	uploadPhoto(p Photo) (Photo, error)
 	deletePhoto(s string) error
 
 	addLike(l LikeAction) (LikeAction, error)
-	removeLike(s string) error
+	removeLike(l LikeAction) error
 
 	addComment(c CommentAction) (CommentAction, error)
 	removeComment(s string) error
