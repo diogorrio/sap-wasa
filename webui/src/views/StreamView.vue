@@ -3,8 +3,19 @@
 </template>
 
 <script>
+import SuccessfulRequest from "../components/SuccessfulRequest.vue";
+
 export default {
-	name: "StreamView"
+	name: "StreamView",
+	components: {SuccessfulRequest},
+	data: function () {
+
+	},
+	methods: {
+		async uploadPhoto() {
+
+		}
+	}
 }
 </script>
 
