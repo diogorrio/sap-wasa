@@ -77,7 +77,7 @@ V1. Enrolling so to obtain an SSH Key.\
 V2. Main structure unfolded.\
 V3. OpenAPI built, extension of the README.md file.\
 V4. Backend structure unfolded.\
-V5.
+V5. Frontend structure unfolded.
 
 ## License
 
