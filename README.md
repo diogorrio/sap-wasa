@@ -76,7 +76,8 @@ $ docker run -it --rm -p 8081:80 wasa-photos-frontend:latest
 V1. Enrolling so to obtain an SSH Key.\
 V2. Main structure unfolded.\
 V3. OpenAPI built, extension of the README.md file.\
-V4.
+V4. Backend structure unfolded.\
+V5.
 
 ## License
 
