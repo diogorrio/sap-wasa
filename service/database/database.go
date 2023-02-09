@@ -89,32 +89,33 @@ type Comment struct {
 	CommentBody string `json:"content"`
 }
 
-// AppDatabase is the high level interface for the DB
+// AppDatabase is the high level interface for the DB - specification of [A-a] naming pattern
 type AppDatabase interface {
 
 	// User Tag Related
-	setUserID(u User, s string) (User, error)
-	setUsername(u User, s string) (User, error)
-	getUserStream(u User) ([]Photo, error)
-	getFollowers(u User) (int, error)
-	getFollowing(u User) (int, error)
+	InitSetUserID(u User) (User, error)
+	SetUserID(u User, s string) (User, error)
+	SetUsername(u User, s string) (User, error)
+	GetUserStream(u User) ([]Photo, error)
+	//GetFollowers(u User) (int, error)
+	//GetFollowing(u User) (int, error)
 
 	// User-Photo Interaction Related
-	uploadPhoto(p Photo) (Photo, error)
-	deletePhoto(s string) error
+	UploadPhoto(p Photo) (Photo, error)
+	DeletePhoto(s string) error
 
-	addLike(l LikeAction) (LikeAction, error)
-	removeLike(l LikeAction) error
+	AddLike(l LikeAction) (LikeAction, error)
+	RemoveLike(l LikeAction) error
 
-	addComment(c CommentAction) (CommentAction, error)
-	removeComment(s string) error
+	AddComment(c CommentAction) (CommentAction, error)
+	RemoveComment(s string) error
 
 	// User-User Interaction Related
-	followUser(f FollowAction) (FollowAction, error)
-	unfollowUser(f FollowAction) error
+	FollowUser(f FollowAction) (FollowAction, error)
+	UnfollowUser(f FollowAction) error
 
-	banUser(b BanAction) (BanAction, error)
-	unbanUser(b BanAction) error
+	BanUser(b BanAction) (BanAction, error)
+	UnbanUser(b BanAction) error
 
 	Ping() error
 }

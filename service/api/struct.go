@@ -61,7 +61,7 @@ type Comment struct {
 
 // ** Main schema methods **
 
-func (u *User) fromDatabase(user database.User) {
+func (u *User) userFromDatabase(user database.User) {
 	u.UserID = user.UserID
 	u.UserName = user.UserName
 	u.PhotoNr = user.PhotoNr
@@ -69,7 +69,7 @@ func (u *User) fromDatabase(user database.User) {
 	u.FollowersNr = user.FollowersNr
 }
 
-func (u *User) toDatabase() database.User {
+func (u *User) userToDatabase() database.User {
 	return database.User{
 		UserID:      u.UserID,
 		UserName:    u.UserName,

@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) uploadPhoto(p Photo) (Photo, error) {
+func (db *appdbimpl) UploadPhoto(p Photo) (Photo, error) {
 	_, err := db.c.Exec(`INSERT INTO photos (userId, user_name, photo_id, photo_data, photo_time, like_nr, comment_nr, liked)
 			VALUES (?, ?, ?, ?)`, p.UserID, p.UserName, p.PhotoID, p.PhotoData, p.PhotoTime, p.LikeNr, p.CommentNr, p.Liked)
 
@@ -10,7 +10,7 @@ func (db *appdbimpl) uploadPhoto(p Photo) (Photo, error) {
 	return p, nil
 }
 
-func (db *appdbimpl) deletePhoto(s string) error {
+func (db *appdbimpl) DeletePhoto(s string) error {
 	_, err_photos := db.c.Exec(`DELETE FROM photos WHERE photo_data=?`, s)
 	if err_photos != nil {
 		return err_photos
@@ -27,7 +27,7 @@ func (db *appdbimpl) deletePhoto(s string) error {
 	return nil
 }
 
-func (db *appdbimpl) addLike(l LikeAction) (LikeAction, error) {
+func (db *appdbimpl) AddLike(l LikeAction) (LikeAction, error) {
 	_, err := db.c.Exec(`INSERT INTO likes (user_id, liked_id, photo_id, like_id)
 			VALUES (?, ?, ?, ?)`, l.UserID, l.LikedID, l.PhotoID, l.LikeID)
 
@@ -37,7 +37,7 @@ func (db *appdbimpl) addLike(l LikeAction) (LikeAction, error) {
 	return l, nil
 }
 
-func (db *appdbimpl) removeLike(l LikeAction) error {
+func (db *appdbimpl) RemoveLike(l LikeAction) error {
 	res, err := db.c.Exec(`DELETE FROM likes WHERE like_id=?`, l.LikeID)
 
 	if err != nil {
@@ -51,7 +51,7 @@ func (db *appdbimpl) removeLike(l LikeAction) error {
 	return nil
 }
 
-func (db *appdbimpl) addComment(c CommentAction) (CommentAction, error) {
+func (db *appdbimpl) AddComment(c CommentAction) (CommentAction, error) {
 	_, err := db.c.Exec(`INSERT INTO comments (user_id, commented_id, photo_id, comment_arr)
 			VALUES (?, ?, ?, ?)`, c.UserID, c.CommentedID, c.PhotoID, c.CommentArr)
 
@@ -61,7 +61,7 @@ func (db *appdbimpl) addComment(c CommentAction) (CommentAction, error) {
 	return c, nil
 }
 
-func (db *appdbimpl) removeComment(s string) error {
+func (db *appdbimpl) RemoveComment(s string) error {
 	res, err := db.c.Exec(`DELETE FROM comments WHERE comment_arr=?`, s)
 
 	if err != nil {
